@@ -171,7 +171,7 @@ exports.handlePostback = (sender_psid, received_postback) => {
           await this.callSendAPI(sender_psid, response);
         } else {
           await enduserDB.updateUser({ psid: sender_psid }, { $set: { isFinding: true, isChatting: false, chatWith: '' } }, null);
-          await enduserDB.findUser({ psid: { $ne: sender_psid }, isFinding: true, isChatting: false, gender: { $ne: user.gender } }, async usersList => {
+          await enduserDB.aggregateUser([{ $match: { psid: { $ne: sender_psid }, isFinding: true, isChatting: false, gender: { $ne: user.gender } } }, { $sample: { size: 1 } }], async userList => {
             if (usersList.length === 0) {
               const response = {
                 "attachment": {
