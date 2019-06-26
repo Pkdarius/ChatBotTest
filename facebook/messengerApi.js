@@ -8,7 +8,7 @@ const GROUP_ID = config.get('GROUP_ID');
 const fbApi = require('./api');
 
 exports.handleMessage = (sender_psid, received_message) => {
-  enduserDB.findUser({ psid: sender_psid }, async (users) => {
+  enduserDB.findUser({ psid: sender_psid }, (users) => {
     const user = users[0];
     if (user.isFinding) {
       const response = {
@@ -27,13 +27,13 @@ exports.handleMessage = (sender_psid, received_message) => {
           }
         }
       }
-      await this.callSendAPI(sender_psid, response);
+      this.callSendAPI(sender_psid, response);
     } else if (user.isChatting) {
       if (received_message.text) {
         const response = {
           text: received_message.text
         }
-        await this.callSendAPI(user.chatWith, response);
+        this.callSendAPI(user.chatWith, response);
       } else if (received_message.attachments) {
         console.log(received_message.attachments);
         let response = {
@@ -42,7 +42,7 @@ exports.handleMessage = (sender_psid, received_message) => {
         if (response.attachment.payload.sticker_id) {
           delete response.attachment.payload.sticker_id;
         }
-        await this.callSendAPI(user.chatWith, response);
+        this.callSendAPI(user.chatWith, response);
       }
     } else {
       response = {
@@ -61,7 +61,7 @@ exports.handleMessage = (sender_psid, received_message) => {
           }
         }
       }
-      await this.callSendAPI(sender_psid, response);
+      this.callSendAPI(sender_psid, response);
     }
   });
 }
