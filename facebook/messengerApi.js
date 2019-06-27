@@ -42,7 +42,7 @@ exports.handleMessage = (sender_psid, received_message) => {
             setTimeout(() => {
               this.sendActions(user.chatWith, 'typing_on');
               resolve();
-            }, 500);
+            }, 1000);
           });
         }).then(() => {
           return new Promise((resolve, reject) => {
