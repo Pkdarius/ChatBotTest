@@ -362,13 +362,51 @@ exports.handlePostback = (sender_psid, received_postback) => {
           }
           await enduserDB.updateUser(user.gender === 'male' ? 'female' : 'male')
           await this.callSendAPI(sender_psid, response);
+
+          await enduserDB.updateUser(user.gender === 'male' ? 'male' : 'female', { psid: sender_psid }, { $set: { isFinding: false, isChatting: false, chatWith: '' } }, null);
+          await enduserDB.updateUser(user.gender !== 'male' ? 'male' : 'female', { psid: user.chatWith }, { $set: { isFinding: false, isChatting: false, chatWith: '' }, $inc: {reported: 1} }, null);
+          const response2 = {
+            "attachment": {
+              "type": "template",
+              "payload": {
+                "template_type": "button",
+                "text": 'Bạn đã kết thúc cuộc trò chuyện chú gấu này 😢 Bạn có muốn tìm gấu khác?',
+                "buttons": [
+                  {
+                    "type": "postback",
+                    "title": "Tìm gấu 🐻",
+                    "payload": "FIND_FRIEND"
+                  }
+                ]
+              }
+            }
+          }
+
+          const response3 = {
+            "attachment": {
+              "type": "template",
+              "payload": {
+                "template_type": "button",
+                "text": 'Chú gấu này đã kết thúc cuộc trò chuyện 😢 Bạn có muốn tìm gấu khác?',
+                "buttons": [
+                  {
+                    "type": "postback",
+                    "title": "Tìm gấu 🐻",
+                    "payload": "FIND_FRIEND"
+                  }
+                ]
+              }
+            }
+          }
+          await this.callSendAPI(sender_psid, response2);
+          await this.callSendAPI(user.chatWith, response3);
         } else {
           const response = {
             "text": "Không thể thực hiện thao tác trong khi không chat với ai ^^"
           }
           await this.callSendAPI(sender_psid, response);
         }
-        // break;
+        break;
       case 'ACCEPT_CANCEL_CHATTING':
         if (user.isFinding) {
           const response = {
