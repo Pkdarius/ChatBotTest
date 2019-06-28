@@ -42,18 +42,18 @@ exports.handleMessage = (sender_psid, received_message) => {
             setTimeout(() => {
               this.sendActions(user.chatWith, 'typing_on');
               resolve();
-            }, 1000);
+            }, 100);
           });
         }).then(() => {
           return new Promise((resolve, reject) => {
             setTimeout(() => {
               this.sendActions(user.chatWith, 'typing_off');
               resolve();
-            }, received_message.text.length * 800);
+            }, received_message.text.length * 80);
           });
         }).then(() => {
           this.callSendAPI(user.chatWith, response);
-        });        
+        });
       } else if (received_message.attachments) {
         console.log(received_message.attachments);
         let response = {
@@ -350,6 +350,25 @@ exports.handlePostback = (sender_psid, received_postback) => {
           await this.callSendAPI(sender_psid, response);
         }
         break;
+      case 'ACCEPT_REPORTING':
+        if (user.isFinding) {
+          response = {
+            "text": "Không thể thực hiện thao tác trong khi đang tìm gấu ^^"
+          }
+          await this.callSendAPI(sender_psid, response);
+        } else if (user.isChatting) {
+          const response = {
+            "text": "Cảm ơn phản hồi của bạn. Chúng tôi sẽ kiểm tra người dùng này và đưa ra quyết định!"
+          }
+          await enduserDB.updateUser(user.gender === 'male' ? 'female' : 'male')
+          await this.callSendAPI(sender_psid, response);
+        } else {
+          const response = {
+            "text": "Không thể thực hiện thao tác trong khi không chat với ai ^^"
+          }
+          await this.callSendAPI(sender_psid, response);
+        }
+        // break;
       case 'ACCEPT_CANCEL_CHATTING':
         if (user.isFinding) {
           const response = {
@@ -397,25 +416,6 @@ exports.handlePostback = (sender_psid, received_postback) => {
         } else {
           const response = {
             "text": "Không thể thực hiện thao tác trong khi không tìm gấu ^^"
-          }
-          await this.callSendAPI(sender_psid, response);
-        }
-        break;
-      case 'ACCEPT_REPORTING':
-        if (user.isFinding) {
-          response = {
-            "text": "Không thể thực hiện thao tác trong khi đang tìm gấu ^^"
-          }
-          await this.callSendAPI(sender_psid, response);
-        } else if (user.isChatting) {
-          const response = {
-            "text": "Cảm ơn phản hồi của bạn. Chúng tôi sẽ kiểm tra người dùng này và đưa ra quyết định!"
-          }
-          await enduserDB.updateUser(user.gender === 'male' ? 'female' : 'male', )
-          await this.callSendAPI(sender_psid, response);
-        } else {
-          const response = {
-            "text": "Không thể thực hiện thao tác trong khi không chat với ai ^^"
           }
           await this.callSendAPI(sender_psid, response);
         }
