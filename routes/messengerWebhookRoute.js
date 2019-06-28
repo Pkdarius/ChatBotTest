@@ -69,7 +69,9 @@ const webhookMessenger = (entry) => {
           gender: result.gender,
           isFinding: false,
           isChatting: false,
-          chatWith: ''
+          chatWith: '',
+          reported: 0,
+          isBlocking: false
         }, null, resolve());
       })
     }).then(() => {
