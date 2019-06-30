@@ -49,7 +49,7 @@ exports.handleMessage = (sender_psid, received_message) => {
             setTimeout(() => {
               this.sendActions(user.chatWith, 'typing_off');
               resolve();
-            }, received_message.text.length * 80);
+            }, 100);
           });
         }).then(() => {
           this.callSendAPI(user.chatWith, response);
@@ -364,7 +364,7 @@ exports.handlePostback = (sender_psid, received_postback) => {
           await this.callSendAPI(sender_psid, response);
 
           await enduserDB.updateUser(user.gender === 'male' ? 'male' : 'female', { psid: sender_psid }, { $set: { isFinding: false, isChatting: false, chatWith: '' } }, null);
-          await enduserDB.updateUser(user.gender !== 'male' ? 'male' : 'female', { psid: user.chatWith }, { $set: { isFinding: false, isChatting: false, chatWith: '' }, $inc: {reported: 1} }, null);
+          await enduserDB.updateUser(user.gender !== 'male' ? 'male' : 'female', { psid: user.chatWith }, { $set: { isFinding: false, isChatting: false, chatWith: '' }, $inc: { reported: 1 } }, null);
           const response2 = {
             "attachment": {
               "type": "template",
